@@ -2,6 +2,7 @@
 <html lang="ar" dir="rtl"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#1e6b52">
+<link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri&family=Noto+Naskh+Arabic&family=Scheherazade+New&family=Noto+Sans+Arabic&display=swap" rel="stylesheet">
 <title>الرقية الشرعية</title>
 <style>
@@ -33,6 +34,7 @@ details{margin-top:8px;color:var(--mu);font-size:14px;line-height:1.8}summary{cu
 .sheet h2{font-size:15px;margin:14px 0 8px;color:var(--mu)}.sheet h2:first-child{margin-top:0}
 .opts{display:flex;gap:8px;flex-wrap:wrap}.opts button{flex:1 1 28%;padding:10px;border-radius:12px;background:var(--card);border:1px solid var(--bd)}
 .opts button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+#o-ff{flex-direction:column}#o-ff button{font-size:20px}
 input[type=range]{width:100%;accent-color:var(--ac)}
 .pv{font-family:var(--ff);font-size:var(--fs);text-align:center;margin:6px 0}
 </style></head>
@@ -118,17 +120,18 @@ const D=[
 {x:"«اللهُمَّ إِنَّا نَسْأَلُكَ مِنْ خَيْرِ مَا سَأَلَكَ مِنْهُ نَبِيُّكَ مُحَمَّدٌ ﷺ، وَنَعُوذُ بِكَ مِنْ شَرِّ مَا اسْتَعَاذَ مِنْهُ نَبِيُّكَ مُحَمَّدٌ ﷺ، وَأَنْتَ الْمُسْتَعَانُ وَعَلَيْكَ الْبَلاَغُ، وَلاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ»"},
 {x:"«اللهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ، اللهُمَّ بَارِكْ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا بَارَكْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ فِي الْعَالَمِينَ إِنَّكَ حَمِيدٌ مَجِيدٌ»"}]}
 ];
-const $=s=>document.querySelector(s),FF=["'Amiri Quran','Amiri',serif","'Scheherazade New','Amiri',serif","'Amiri','Noto Naskh Arabic',serif","'Noto Naskh Arabic','Droid Arabic Naskh',serif","'Noto Sans Arabic','Droid Arabic Kufi',system-ui,sans-serif"],FN=["قرآني","مصحف","نسخ أميري","نسخ نوتو","سَنْس"],TH=[["light","فاتح"],["sepia","ورقي"],["dark","داكن"]];
+const $=s=>document.querySelector(s),FF=["'Amiri Quran','Amiri',serif","'Scheherazade New','Amiri',serif","'Amiri','Noto Naskh Arabic',serif","'Noto Naskh Arabic','Droid Arabic Naskh',serif","'Noto Sans Arabic','Droid Arabic Kufi',system-ui,sans-serif"],FN=["أميري قرآن","شهرزاد الجديد","أميري نسخ","نوتو نسخ","نوتو سَنْس"],TH=[["light","فاتح"],["sepia","ورقي"],["dark","داكن"]];
 let st={th:"light",ff:0,fs:24,sec:0},cnt={};
 try{Object.assign(st,JSON.parse(localStorage.getItem("rq")||"{}"))}catch(e){}
+if(!FF[st.ff])st.ff=0;
 const save=()=>{try{localStorage.setItem("rq",JSON.stringify(st))}catch(e){}};
 function apply(){const r=document.documentElement;r.dataset.th=st.th;r.style.setProperty("--ff",FF[st.ff]);r.style.setProperty("--fs",st.fs+"px");$('meta[name=theme-color]').content=st.th=="dark"?"#101614":"#1e6b52"}
 function tabs(){$("#tabs").innerHTML=D.map((s,i)=>`<button class="tab${i==st.sec?" on":""}" data-s="${i}">${s.t}</button>`).join("")}
 function lbl(id,c){const n=cnt[id]||0;return c?n+" / "+c:n}
 function list(){$("#list").innerHTML=D[st.sec].i.map((it,k)=>{const id=st.sec+"_"+k,n=cnt[id]||0;return `<article class="card${it.c&&n>=it.c?" done":""}" id="c${id}"><p class="tx">${it.x}</p>${it.r?`<div class="rf">${it.r}</div>`:""}${it.n?`<details><summary>حاشية</summary><p>${it.n}</p></details>`:""}<div class="row"><button class="cb" data-id="${id}">${lbl(id,it.c)}</button><button class="rs" data-r="${id}" ${n?"":"hidden"}>إعادة</button></div></article>`}).join("");scrollTo(0,0)}
 function upd(id){const [s,k]=id.split("_"),it=D[s].i[k],n=cnt[id]||0,c=$("#c"+id);c.querySelector(".cb").textContent=lbl(id,it.c);c.querySelector(".rs").hidden=!n;c.classList.toggle("done",!!it.c&&n>=it.c)}
-function opts(el,arr,key){$(el).innerHTML=arr.map((a,i)=>`<button data-k="${key}" data-v="${a[0]??i}" class="${st[key]==(a[0]??i)?"on":""}">${a[1]??a}</button>`).join("")}
-function sheet(){opts("#o-th",TH,"th");opts("#o-ff",FN,"ff");$("#fs").value=st.fs}
+function opts(el,arr,key){$(el).innerHTML=arr.map((a,i)=>{const v=Array.isArray(a)?a[0]:i,l=Array.isArray(a)?a[1]:a;return `<button data-k="${key}" data-v="${v}" class="${st[key]==v?"on":""}">${l}</button>`}).join("")}
+function sheet(){opts("#o-th",TH,"th");opts("#o-ff",FN,"ff");document.querySelectorAll("#o-ff button").forEach((b,i)=>b.style.fontFamily=FF[i]);$("#fs").value=st.fs}
 document.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;const d=b.dataset;
 if(d.s!=null){st.sec=+d.s;save();tabs();list()}
 else if(d.id){const[s,k]=d.id.split("_"),c=D[s].i[k].c,n=cnt[d.id]||0;if(c&&n>=c)return;cnt[d.id]=n+1;if(c&&n+1>=c)navigator.vibrate&&navigator.vibrate(60);upd(d.id)}
@@ -139,4 +142,5 @@ else if(b.id=="rall"){cnt={};list()}});
 $("#sh").addEventListener("click",e=>{if(e.target.id=="sh")e.target.hidden=true});
 $("#fs").addEventListener("input",e=>{st.fs=+e.target.value;save();apply()});
 apply();tabs();list();
+if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 </script></body></html>
